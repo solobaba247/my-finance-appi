@@ -1,1 +1,58 @@
 
+# .github/workflows/scheduled_data_fetch.yml
+
+name: Scheduled Data Fetch
+
+# Controls when the action will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+  # Runs on a schedule (e.g., every hour at the 0th minute)
+  schedule:
+    - cron: '0 * * * *' # You can change this cron schedule
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checks out your repository's code so the job can access it
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Sets up the Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # 3. Installs the necessary Python libraries
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install yfinance
+
+      # 4. Runs your Python script to fetch data and create live_data.json
+      - name: Run data fetch script
+        run: python update_data.py
+
+      # 5. Commits the new live_data.json file back to the repository
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add the file, commit, and push
+          # Use a condition to only commit if there are changes
+          if ! git diff --quiet live_data.json; then
+            git add live_data.json
+            git commit -m "Update live stock data" -m "Data updated at $(date -u)"
+            git push
+          else
+            echo "No changes to commit."
+          fi
+        env:
+          # We use the secret token here for authentication
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
