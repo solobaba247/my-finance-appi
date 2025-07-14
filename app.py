@@ -29,9 +29,9 @@ def get_stock_info(ticker_symbol):
 def get_forex_data(pair):
     # We must add '=X' to the end for yfinance to recognize it as a currency pair
     forex_ticker = f"{pair.upper()}=X"
-    
+
     currency = yf.Ticker(forex_ticker)
-    
+
     if currency.info.get('regularMarketPrice') is None:
         return jsonify({"error": f"Forex pair '{pair}' not found or data is unavailable."}), 404
     else:
