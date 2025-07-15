@@ -1,5 +1,6 @@
-
+# requirements.txt (for the finance API project)
 Flask
 gunicorn
 yfinance
 pandas
+cachetools==5.3.3
