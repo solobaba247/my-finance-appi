@@ -1,4 +1,4 @@
-# app.py (V7: Relaxed Validation)
+# app.py (V8: Fixed date formatting)
 
 from flask import Flask, jsonify, request
 import yfinance as yf
@@ -45,8 +45,8 @@ def get_ohlc_data(yfinance_ticker):
     if pd.api.types.is_datetime64_any_dtype(hist_df['Date']) and hist_df['Date'].dt.tz is not None:
          hist_df['Date'] = hist_df['Date'].dt.tz_convert(None)
 
-    # --- FIX: Changed date format to standard ISO 8601 ---
-    hist_df['Date'] = pd.to_datetime(hist_df['Date']).dt.isoformat()
+    # --- FIX: Apply isoformat to each element in the series correctly ---
+    hist_df['Date'] = hist_df['Date'].apply(lambda x: x.isoformat())
     
     data = hist_df.to_dict(orient='records')
     response = (data, 200)
