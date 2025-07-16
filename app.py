@@ -1,15 +1,34 @@
-# app.py (V8: Fixed date formatting)
+# app.py (V9: Added fast live data endpoint)
 
 from flask import Flask, jsonify, request
 import yfinance as yf
 import pandas as pd
 from cachetools import TTLCache
 import re
+import json # <-- Added import for json
 
 app = Flask(__name__)
 
 # --- High-Performance Caching ---
 cache = TTLCache(maxsize=1024, ttl=600)
+
+# --- NEW: Ultra-fast endpoint for pre-computed data ---
+@app.route("/api/live-data")
+def get_live_data():
+    """
+    Serves the pre-fetched market data from the live_data.json file.
+    This file is updated periodically by a background job.
+    This is extremely fast and solves the scanner timeout issue.
+    """
+    try:
+        with open("live_data.json", "r") as f:
+            data = json.load(f)
+        return jsonify(data), 200
+    except FileNotFoundError:
+        return jsonify({"error": "Live data file not found. It may be generating."}), 404
+    except Exception as e:
+        return jsonify({"error": f"An error occurred reading live data: {str(e)}"}), 500
+
 
 # --- Helper function for fetching and formatting OHLC data ---
 def get_ohlc_data(yfinance_ticker):
@@ -45,7 +64,6 @@ def get_ohlc_data(yfinance_ticker):
     if pd.api.types.is_datetime64_any_dtype(hist_df['Date']) and hist_df['Date'].dt.tz is not None:
          hist_df['Date'] = hist_df['Date'].dt.tz_convert(None)
 
-    # --- FIX: Apply isoformat to each element in the series correctly ---
     hist_df['Date'] = hist_df['Date'].apply(lambda x: x.isoformat())
     
     data = hist_df.to_dict(orient='records')
