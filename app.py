@@ -1,4 +1,4 @@
-# app.py (V6: Added Health Check)
+# app.py (V7: Relaxed Validation)
 
 from flask import Flask, jsonify, request
 import yfinance as yf
@@ -19,26 +19,6 @@ def get_ohlc_data(yfinance_ticker):
     """
     period = request.args.get('period', '1mo')
     interval = request.args.get('interval', '1d')
-
-    # --- FIX: Added validation for intraday data requests ---
-    # yfinance intraday data is limited to a 60-day lookback period.
-    if interval.endswith('m') or interval.endswith('h'): # e.g., '1m', '5m', '1h'
-        # Extract the number from the period string (e.g., '60d' -> 60)
-        period_value = int(re.findall(r'(\d+)', period)[0]) if re.findall(r'(\d+)', period) else 0
-        period_unit = period[-1]
-
-        # Convert period to an approximate number of days
-        days_requested = 0
-        if period_unit == 'd':
-            days_requested = period_value
-        elif period_unit == 'o': # 'mo'
-            days_requested = period_value * 30
-        
-        # Yahoo Finance limit is 60 days for intraday
-        if days_requested > 60:
-            error_msg = f"Invalid request. Intraday data (interval '{interval}') is only available for periods up to 60 days. Please use a shorter period like '60d' or '1mo'."
-            # Do NOT cache this user error, as they might want to correct it
-            return ({"error": error_msg}, 400) # 400 for Bad Request
 
     cache_key = f"{yfinance_ticker}-{period}-{interval}"
 
