@@ -1,6 +1,10 @@
-# requirements.txt (for the finance API project)
-Flask
-gunicorn
-yfinance
-pandas
-cachetools==5.3.3
+Flask==2.3.3
+yfinance==0.2.18
+Flask-Cors==4.0.0
+pandas==2.0.3
+gunicorn==21.2.0
+requests==2.31.0
+numpy==1.24.3
+lxml==4.9.3
+html5lib==1.1
+beautifulsoup4==4.12.2
