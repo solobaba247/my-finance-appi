@@ -1,11 +1,13 @@
-services:
-  - type: web
-    name: my-finance-api
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 30"
-    envVars:
-      - key: FLASK_ENV
-        value: production
-      - key: PYTHONUNBUFFERED
-        value: "1"
+--- a/my-finance-appi-main/render.yaml
++++ b/my-finance-appi-main/render.yaml
+@@ -3,7 +3,7 @@
+     type: web
+     name: my-finance-api
+     env: python
+-    buildCommand: "pip install -r requirements.txt"
+-    startCommand: "gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 30"
++    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
++    startCommand: "gunicorn app:app"
+     envVars:
+       - key: FLASK_ENV
+         value: production
