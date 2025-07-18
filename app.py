@@ -28,7 +28,7 @@ ASSET_CONFIGS = {
 # Simple in-memory cache to improve performance and avoid rate limiting.
 # In a larger application, consider using a dedicated cache like Redis.
 CACHE = {}
-CACHE_DURATION_SECONDS = 300  # Cache data for 5 minutes
+CACHE_DURATION_SECONDS = 3600  # Cache data for 5 minutes
 
 # --- HELPER FUNCTIONS ---
 
