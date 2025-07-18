@@ -8,3 +8,5 @@ numpy==1.24.3
 lxml==4.9.3
 html5lib==1.1
 beautifulsoup4==4.12.2
+setuptools>=65.0.0
+wheel>=0.38.0
